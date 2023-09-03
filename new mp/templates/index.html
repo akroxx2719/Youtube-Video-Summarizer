@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Video Summarizer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+       
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>YouTube Video Summarizer</h1>
+        <form id="summarizeForm">
+            <label for="videoUrl">Enter YouTube Video URL:</label>
+            <input type="text" id="videoUrl" placeholder="https://www.youtube.com/watch?v=...">
+            <button type="submit">Summarize</button>
+        </form>
+        <div id="results">
+            <h2>Results:</h2>
+            <div id="loading" style="display: none;">Loading...</div>
+            <p  id="originalTranscript"></p>
+            <p  id="summarizedText"></p>
+            <p  id="originalTranscriptLength"></p>
+            <p  id="summarizedTextLength"></p>
+            <p  id="rougeScore"></p>
+        </div>
+    </div>
+    <script>
+        document.getElementById('summarizeForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            document.getElementById('loading').style.display = 'block';
+            
+            
+            const videoUrl = document.getElementById('videoUrl').value;
+            const response = await fetch('/summarize', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ videoUrl })
+            });
+            const data = await response.json();
+
+            document.getElementById('loading').style.display = 'none';
+            
+
+
+            document.getElementById('originalTranscript').textContent = `Original Transcript:\n\n${data.fullTranscript}`;
+            document.getElementById('summarizedText').textContent = `Summarized Text:\n\n${data.summarizedText}`;
+            document.getElementById('originalTranscriptLength').textContent = `Original Transcript Length: ${data.originalTranscriptLength}`;
+            document.getElementById('summarizedTextLength').textContent = `Summarized Text Length: ${data.summarizedTextLength}`;
+            document.getElementById('rougeScore').textContent = `ROUGE Score: ${data.rougeScore}`;
+        });
+    </script>
+</body>
+</html>
